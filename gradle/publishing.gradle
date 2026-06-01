@@ -123,6 +123,12 @@ configure(rootProject) { subproject ->
 					}
 				}
 			}
+			if (project.hasProperty("deploymentRepository")) {
+				maven {
+					name = 'Deployment'
+					url = project.property("deploymentRepository")
+				}
+			}
 		}
 
 		publications {
@@ -188,20 +194,4 @@ configure(rootProject) { subproject ->
 		}
 	}
 
-	if (qualifyVersion("$version") in ["RELEASE", "MILESTONE"] || rootProject.hasProperty("forceSigning")) {
-		apply plugin: 'signing'
-
-		signing {
-			//requiring signature if there is a publish task that is not to MavenLocal
-			required {  gradle.taskGraph.allTasks.any { it.name.toLowerCase().contains("publish")	&& !it.name.contains("MavenLocal") } }
-			def signingKey = findProperty("signingKey")
-			def signingPassword = findProperty("signingPassword")
-
-			useInMemoryPgpKeys(signingKey, signingPassword)
-
-			afterEvaluate {
-				sign publishing.publications.mavenJava
-			}
-		}
-	}
 }
