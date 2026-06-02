@@ -17,6 +17,7 @@
 package reactor.kotlin.core.publisher
 
 import org.junit.Test
+import org.reactivestreams.Publisher
 import reactor.test.StepVerifier
 import reactor.test.publisher.TestPublisher
 
@@ -24,8 +25,8 @@ class MonoFunctionsTests {
 
     @Test
     fun `whenComplete with void Publishers`() {
-        val publishers = Array(3) { TestPublisher.create<Void>() }
-        publishers.forEach { it.complete() }
+        val publishers = Array<Publisher<Void>>(3) { TestPublisher.create() }
+        publishers.forEach { (it as TestPublisher<Void>).complete() }
         StepVerifier.create(whenComplete(*publishers))
                 .verifyComplete()
     }
